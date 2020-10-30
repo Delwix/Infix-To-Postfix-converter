@@ -1,10 +1,17 @@
 import re
-
+import operator
 
 dic = {'(':1,'+':2,'-':2,'*':3,'/':3,'^':4}
+ops = {
+    '+' : operator.add,
+    '-' : operator.sub,
+    '*' : operator.mul,
+    '/' : operator.truediv,
+    '^' : operator.pow,
+}
 
 
-def postfix(formula):
+def convert(formula):  #Convert Infix to Postfix
     out = ""
     stack = []
     for i in formula:
@@ -30,10 +37,24 @@ def postfix(formula):
     while stack:
         out += stack.pop()
         
-    print(out)
+    print("Postfix :",out)
     return(out)
 
 
+
+def evaluate(pfx):
+    stack = []
+    for i in pfx:
+        if re.match(r'[\^\+\-\*/]',i):
+            a = stack.pop()
+            b = stack.pop()
+            res = ops[i](b,a)
+            stack.append(res)
+        else:
+            stack.append(int(i))
+    return(stack[0])
+    
+    
 def preprocess(s):
     s = s.replace(" ","")
     x = re.findall(r'[^a-zA-Z0-9\^\(\+\-\*/\)]',s)
@@ -56,8 +77,12 @@ Some valid test cases:
 def main():
     s = input()
     s = preprocess(s)
-    postfix(s)
-    return
+    out = convert(s)
+    if re.search(r'[^0-9\^\+\-\*/]',out):
+        print("Can't evaluate")
+        return(1)
+    print("evaluation =",evaluate(out))
+    return(0)
     
 if __name__== '__main__':
     main()
