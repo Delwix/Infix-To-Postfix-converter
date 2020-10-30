@@ -12,15 +12,16 @@ ops = {
 
 
 def convert(formula):  #Convert Infix to Postfix
-    out = ""
+    out = []
     stack = []
+    formula = re.findall(r'\d+|[\^\(\+\-\*/\)a-zA-Z]', formula)
     for i in formula:
         if i == ')':
             while True:
                 last = stack.pop()
                 if last == '(':
                     break
-                out += last
+                out.append(last)
                     
         elif re.match(r'[\^\(\+\-\*/]',i):
             if stack == [] or i=='(' or dic[i] > dic[stack[-1]]:
@@ -29,15 +30,15 @@ def convert(formula):  #Convert Infix to Postfix
             else:
                 while stack and dic[stack[-1]] >= dic[i]:
                     last = stack.pop()
-                    out += last
+                    out.append(last)
                 stack.append(i)
                 continue
         else:
-            out += i
+            out.append(i)
     while stack:
-        out += stack.pop()
-        
-    print("Postfix :",out)
+        out.append(stack.pop())
+    
+    print("Postfix :",' '.join(out))
     return(out)
 
 
@@ -78,7 +79,7 @@ def main():
     s = input()
     s = preprocess(s)
     out = convert(s)
-    if re.search(r'[^0-9\^\+\-\*/]',out):
+    if re.search(r'[^0-9\^\+\-\*/]',''.join(out)):
         print("Can't evaluate")
         return(1)
     print("evaluation =",evaluate(out))
