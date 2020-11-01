@@ -45,8 +45,10 @@ def convert(formula):  #Convert Infix to Postfix
 def evaluate(pfx):
     stack = []
     for i in pfx:
-        if re.match('^sin|^cos',i):
-            i = eval(i)
+        if re.match('^sin\(',i):
+            i = cos(float(i[4:-1]))
+        elif re.match('^cos\(',i):
+            i = cos(float(i[4:-1]))
         elif re.match(r'[\^\+\-\*/]',i):
             a = stack.pop()
             b = stack.pop()
@@ -74,6 +76,7 @@ Some valid test cases:
     C = "4-2/2"
     D = "A+B*C+D"
     E = "3*(x+1)-2/2"
+    F = "(8*2-10)*2*3+(10+cos(1))"
 """
    
 def main():
