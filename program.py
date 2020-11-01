@@ -1,5 +1,6 @@
 import re
 import operator
+from math import sin, cos
 
 dic = {'(':1,'+':2,'-':2,'*':3,'/':3,'^':4}
 ops = {
@@ -10,11 +11,10 @@ ops = {
     '^' : operator.pow,
 }
 
-
 def convert(formula):  #Convert Infix to Postfix
     out = []
     stack = []
-    formula = re.findall(r'\d+|[\^\(\+\-\*/\)a-zA-Z]', formula)
+    formula = re.findall(r'\d+|\w+\(\d\)|[\^\(\+\-\*/\)a-zA-Z]', formula)
     for i in formula:
         if i == ')':
             while True:
@@ -42,19 +42,20 @@ def convert(formula):  #Convert Infix to Postfix
     return(out)
 
 
-
 def evaluate(pfx):
     stack = []
     for i in pfx:
-        if re.match(r'[\^\+\-\*/]',i):
+        if re.match('^sin|^cos',i):
+            i = eval(i)
+        elif re.match(r'[\^\+\-\*/]',i):
             a = stack.pop()
             b = stack.pop()
             res = ops[i](b,a)
             stack.append(res)
-        else:
-            stack.append(int(i))
+            continue
+        stack.append(float(i))
     return(stack[0])
-    
+
     
 def preprocess(s):
     s = s.replace(" ","")
@@ -79,10 +80,10 @@ def main():
     s = input()
     s = preprocess(s)
     out = convert(s)
-    if re.search(r'[^0-9\^\+\-\*/]',''.join(out)):
-        print("Can't evaluate")
-        return(1)
-    print("evaluation =",evaluate(out))
+    try:
+        print("evaluation =",evaluate(out))
+    except:
+        print('Could not evaluate')
     return(0)
     
 if __name__== '__main__':
